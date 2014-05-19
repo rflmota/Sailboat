@@ -1,0 +1,29 @@
+type rudder [0.0,100.0;101] {
+  full_port xfl.singleton(0.0);
+  port xfl.singleton(25.0);
+  centered xfl.singleton(50.0);
+  starboard xfl.singleton(75.0);
+  full_starboard xfl.singleton(100.0);
+}
+
+type goal_alignment [-180.0,180.0;361] {
+  far_left xfl.trapezoid(-210.0,-180.0,-90.0,-60.0);
+  too_left xfl.triangle(-90.0,-60.0,-30.0);
+  left xfl.triangle(-60.0,-30.0,30.0);
+  right xfl.triangle(-30.0,30.0,60.0);
+  too_right xfl.triangle(30.0,60.0,90.0);
+  far_right xfl.trapezoid(60.0,90.0,180.0,210.0);
+}
+
+rulebase rudder_controller_rules (goal_alignment goal_alignment : rudder rudder) {
+  if(goal_alignment == far_left) -> rudder = full_port;
+  if(goal_alignment == too_left) -> rudder = port;
+  if(goal_alignment == left) -> rudder = centered;
+  if(goal_alignment == right) -> rudder = centered;
+  if(goal_alignment == too_right) -> rudder = starboard;
+  if(goal_alignment == far_right) -> rudder = full_starboard;
+}
+
+system (goal_alignment goal_alignment : rudder rudder) {
+  rudder_controller_rules(goal_alignment : rudder);
+ }

@@ -1,0 +1,70 @@
+type sail [0.0,100.0;101] {
+  full_tight xfl.singleton(0.0);
+  tight xfl.singleton(25.0);
+  half xfl.singleton(50.0);
+  loose xfl.singleton(75.0);
+  full_loose xfl.singleton(100.0);
+}
+
+type goal_alignment [-180.0,180.0;361] {
+  far_left xfl.trapezoid(-210.0,-180.0,-90.0,-60.0);
+  too_left xfl.triangle(-90.0,-60.0,-30.0);
+  left xfl.triangle(-60.0,-30.0,30.0);
+  right xfl.triangle(-30.0,30.0,60.0);
+  too_right xfl.triangle(30.0,60.0,90.0);
+  far_right xfl.trapezoid(60.0,90.0,180.0,210.0);
+}
+
+type wind_alignment [0.0,180.0;181] {
+  bow xfl.trapezoid(-45.0,0.0,45.0,90.0);
+  slant xfl.triangle(45.0,90.0,135.0);
+  stern xfl.trapezoid(90.0,135.0,180.0,225.0);
+}
+
+type roll [0.0,90.0;91] {
+  right xfl.trapezoid(-30.0,0.0,30.0,60.0);
+  heel xfl.trapezoid(30.0,60.0,90.0,120.0);
+}
+
+rulebase sail_controller_rules (roll roll, goal_alignment goal_alignment, wind_alignment wind_alignment : sail sail) {
+  if(roll == right & goal_alignment == far_left & wind_alignment == stern) -> sail = loose;
+  if(roll == right & goal_alignment == too_left & wind_alignment == stern) -> sail = loose;
+  if(roll == right & goal_alignment == left & wind_alignment == stern) -> sail = full_loose;
+  if(roll == right & goal_alignment == right & wind_alignment == stern) -> sail = full_loose;
+  if(roll == right & goal_alignment == too_right & wind_alignment == stern) -> sail = loose;
+  if(roll == right & goal_alignment == far_right & wind_alignment == stern) -> sail = loose;
+  if(roll == right & goal_alignment == far_left & wind_alignment == slant) -> sail = tight;
+  if(roll == right & goal_alignment == too_left & wind_alignment == slant) -> sail = tight;
+  if(roll == right & goal_alignment == left & wind_alignment == slant) -> sail = half;
+  if(roll == right & goal_alignment == right & wind_alignment == slant) -> sail = half;
+  if(roll == right & goal_alignment == too_right & wind_alignment == slant) -> sail = tight;
+  if(roll == right & goal_alignment == far_right & wind_alignment == slant) -> sail = tight;
+  if(roll == right & goal_alignment == far_left & wind_alignment == bow) -> sail = full_tight;
+  if(roll == right & goal_alignment == too_left & wind_alignment == bow) -> sail = full_tight;
+  if(roll == right & goal_alignment == left & wind_alignment == bow) -> sail = full_tight;
+  if(roll == right & goal_alignment == right & wind_alignment == bow) -> sail = full_tight;
+  if(roll == right & goal_alignment == too_right & wind_alignment == bow) -> sail = full_tight;
+  if(roll == right & goal_alignment == far_right & wind_alignment == bow) -> sail = full_tight;
+  if(roll == heel & goal_alignment == far_left & wind_alignment == stern) -> sail = half;
+  if(roll == heel & goal_alignment == too_left & wind_alignment == stern) -> sail = half;
+  if(roll == heel & goal_alignment == left & wind_alignment == stern) -> sail = loose;
+  if(roll == heel & goal_alignment == right & wind_alignment == stern) -> sail = loose;
+  if(roll == heel & goal_alignment == too_right & wind_alignment == stern) -> sail = half;
+  if(roll == heel & goal_alignment == far_right & wind_alignment == stern) -> sail = half;
+  if(roll == heel & goal_alignment == far_left & wind_alignment == slant) -> sail = half;
+  if(roll == heel & goal_alignment == too_left & wind_alignment == slant) -> sail = half;
+  if(roll == heel & goal_alignment == left & wind_alignment == slant) -> sail = loose;
+  if(roll == heel & goal_alignment == right & wind_alignment == slant) -> sail = loose;
+  if(roll == heel & goal_alignment == too_right & wind_alignment == slant) -> sail = half;
+  if(roll == heel & goal_alignment == far_right & wind_alignment == slant) -> sail = half;
+  if(roll == heel & goal_alignment == far_left & wind_alignment == bow) -> sail = tight;
+  if(roll == heel & goal_alignment == too_left & wind_alignment == bow) -> sail = tight;
+  if(roll == heel & goal_alignment == left & wind_alignment == bow) -> sail = tight;
+  if(roll == heel & goal_alignment == right & wind_alignment == bow) -> sail = tight;
+  if(roll == heel & goal_alignment == too_right & wind_alignment == bow) -> sail = tight;
+  if(roll == heel & goal_alignment == far_right & wind_alignment == bow) -> sail = tight;
+}
+
+system (roll roll, goal_alignment goal_alignment, wind_alignment wind_alignment : sail sail) {
+  sail_controller_rules(roll, goal_alignment, wind_alignment : sail);
+ }
